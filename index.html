@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Fate Dice</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="fate-core-glyphs.css">
+    <style>
+      html, body {
+        padding: 0;
+        margin: 0;
+      }
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 2em;
+        color: #555;
+      }
+      .main {
+        text-align: center;
+      }
+
+      .dice {
+        font-size: 5rem;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+        max-width: 15rem;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .die {
+        font-family: 'Fate Core Glyphs';
+        display: inline-block;
+      }
+
+      .result,
+      .form,
+      .latest {
+        margin-top: 1em;
+        margin-bottom: 1em;
+      }
+
+      .result-num {
+        display: inline-block;
+        text-align: right;
+      }
+
+      .roll-btn {
+        padding: 1em;
+      }
+
+      .latest {
+        font-size: .5em;
+        max-width: 15rem;
+        margin-left: auto;
+        margin-right: auto;
+        color: #999;
+        text-align: left;
+      }
+
+      .latest .result-num {
+        width: 2em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main">
+      <div class="dice"></div>
+      <div class="result"></div>
+      <div class="form">
+        <button class="roll-btn">Roll</button>
+      </div>
+      <div class="latest"></div>
+    </div>
+
+    <script>
+      var latest = []
+      var display = {
+        '-1': '-',
+        '0' : '0',
+        '1' : '+'
+      }
+      var scales = {
+        'en': {
+          '-2': 'terrible',
+          '-1': 'poor',
+          '0' : 'mediocre',
+          '1' : 'average',
+          '2' : 'fair',
+          '3' : 'good',
+          '4' : 'great',
+          '5' : 'superb',
+          '6' : 'fantastic',
+          '7' : 'epic',
+          '8' : 'legendary'
+        },
+        'it': {
+          '-2': 'pessimo',
+          '-1': 'scarso',
+          '0' : 'mediocre',
+          '1' : 'medio',
+          '2' : 'discreto',
+          '3' : 'buono',
+          '4' : 'ottimo',
+          '5' : 'eccellente',
+          '6' : 'fantastico',
+          '7' : 'epico',
+          '8' : 'leggendario'
+        }
+      }
+      var lang = navigator.language
+      var scale = scales[lang] || scales[lang.split('-')[0]] || scales['en']
+
+      
+      var rollBtn = document.querySelector('.roll-btn')
+      rollBtn.onclick = doRoll
+      doRoll()
+
+
+
+      function doRoll() {
+        rollBtn.disabled = true
+        var rolls = 5
+
+        displayBlankResult()
+        displayLatest()
+        setTimeout(internalRoll, 100)
+
+        function internalRoll() {
+          var results = rollDice()
+          displayDice(results)
+
+          if (--rolls) {
+            setTimeout(internalRoll, 100)
+          } else {
+            rollBtn.disabled = false
+            displayResult(results)
+            saveResult(results)
+          }
+        }
+      }
+
+      function saveResult(results) {
+        latest.unshift(results.slice())
+      }
+
+      function rollDie() {
+        return Math.floor(Math.random() * 3) - 1
+      }
+
+      function rollDice() {
+        var results = []
+        for (var i = 0; i < 4; i++) {
+          results[i] = rollDie()
+        }
+        return results
+      }
+
+      function sumDice(results) {
+        return results.reduce(function (sum, d) { return sum + d }, 0)
+      }
+
+      function getTextResult (results) {
+        var r = sumDice(results)
+        var scaled = scale[r]
+        return '<span class="result-num">' + (r > 0 ? '+' : '') + r + '</span>' +
+          ' &middot; ' +
+          '<span class="result-scaled">' + (scale[r] || '---') + '</span>'
+      }
+
+      function displayDice(results) {
+        document.querySelector('.dice').innerHTML = results.map(function(d) {
+          return '<div class="die">' + display[d] + '</div>'
+        }).join('')
+      }
+
+      function displayBlankResult() {
+        document.querySelector('.result').innerHTML = '---'
+      }
+
+      function displayResult(results) {
+        document.querySelector('.result').innerHTML = getTextResult(results)
+      }
+
+      function displayLatest() {
+        document.querySelector('.latest').innerHTML = latest.map(function (r) {
+          return '<div class="latest-item">' + getTextResult(r) + '</div>'
+        }).join('')
+      }
+    </script>
+  </body>
+</html>
