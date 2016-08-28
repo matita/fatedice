@@ -1,0 +1,14 @@
+{
+  "name": "Fate Dice",
+  "icons": [
+    {
+      "src": "favicon-152.png",
+      "sizes": "152.152",
+      "type": "image/png",
+      "density": 1.0
+    }
+  ],
+  "start_url": "index.html",
+  "display": "standalone",
+  "orientation": "portrait"
+}
