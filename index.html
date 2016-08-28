@@ -146,8 +146,11 @@
       var isRolling = false
 
       
-      document.querySelector('.instructions').onclick = doRoll
-      document.querySelector('.dice').onclick = doRoll
+      var instructionsDOM = document.querySelector('.instructions')
+      var diceDOM = document.querySelector('.dice')
+      
+      instructionsDOM.onclick = instructionsDOM.ontouchstart = doRoll
+      diceDOM.onclick = diceDOM.ontouchend = doRoll
       doRoll()
 
 
