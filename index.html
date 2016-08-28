@@ -11,13 +11,29 @@
         padding: 0;
         margin: 0;
       }
+      html {
+        height: 100%;
+      }
       body {
         font-family: Arial, Helvetica, sans-serif;
         font-size: 2em;
-        color: #555;
+        color: #999;
+        height: 100%;
+      }
+      a {
+        color: #000;
+        text-decoration: none;
+        border-bottom: 1px dotted #999;
       }
       .main {
         text-align: center;
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
+      }
+
+      .instructions {
+        margin-bottom: 0;
       }
 
       .dice {
@@ -27,6 +43,8 @@
         max-width: 15rem;
         margin-left: auto;
         margin-right: auto;
+        cursor: pointer;
+        color: #555;
       }
 
       .die {
@@ -39,6 +57,10 @@
       .latest {
         margin-top: 1em;
         margin-bottom: 1em;
+      }
+
+      .result {
+        color: #555;
       }
 
       .result-num {
@@ -55,23 +77,33 @@
         max-width: 15rem;
         margin-left: auto;
         margin-right: auto;
-        color: #999;
         text-align: left;
+        flex-grow: 1;
       }
 
       .latest .result-num {
         width: 2em;
       }
+
+      footer {
+        font-size: .7rem;
+        border-top: 1px solid #eee;
+        padding: 1em;
+      }
     </style>
   </head>
   <body>
     <div class="main">
+      <h4 class="instructions">Click to re-roll</h4>
       <div class="dice"></div>
       <div class="result"></div>
-      <div class="form">
-        <button class="roll-btn">Roll</button>
-      </div>
       <div class="latest"></div>
+
+      <footer>
+        Made by <a href="https://github.com/matita">matita</a> &middot;
+        <a href="https://github.com/matita/fatedice">Source code</a><br>
+        The Fate Core font is &copy; Evil Hat Productions, LLC and is used with permission. The Four Actions icons were designed by Jeremy Keller.
+      </footer>
     </div>
 
     <script>
@@ -111,16 +143,19 @@
       }
       var lang = navigator.language
       var scale = scales[lang] || scales[lang.split('-')[0]] || scales['en']
+      var isRolling = false
 
       
-      var rollBtn = document.querySelector('.roll-btn')
-      rollBtn.onclick = doRoll
+      document.querySelector('.instructions').onclick = doRoll
+      document.querySelector('.dice').onclick = doRoll
       doRoll()
 
 
 
       function doRoll() {
-        rollBtn.disabled = true
+        if (isRolling)
+          return
+        isRolling = true
         var rolls = 5
 
         displayBlankResult()
@@ -134,7 +169,7 @@
           if (--rolls) {
             setTimeout(internalRoll, 100)
           } else {
-            rollBtn.disabled = false
+            isRolling = false
             displayResult(results)
             saveResult(results)
           }
