@@ -61,7 +61,7 @@
       }
 
       .die {
-        font-family: 'Fate Core Glyphs';
+        font-family: 'Fate Core Glyphs', monospace;
         display: inline-block;
       }
 
@@ -120,7 +120,8 @@
     </div>
 
     <script>
-      var latest = []
+      var latest = JSON.parse(localStorage['fatedice-latest'] || '[]')
+      var latestCount = 10
       var display = {
         '-1': '-',
         '0' : '0',
@@ -194,6 +195,9 @@
 
       function saveResult(results) {
         latest.unshift(results.slice())
+        while (latest.length > latestCount)
+          latest.pop()
+        localStorage['fatedice-latest'] = JSON.stringify(latest)
       }
 
       function rollDie() {
