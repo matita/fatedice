@@ -124,9 +124,11 @@
       </footer>
     </div>
 
+    <script src="random.min.js"></script>
     <script>
       var latest = JSON.parse(localStorage['fatedice-latest'] || '[]')
       var latestCount = 10
+      var rollDelay = 100
       var display = {
         '-1': '-',
         '0' : '0',
@@ -163,6 +165,7 @@
       var lang = navigator.language
       var scale = scales[lang] || scales[lang.split('-')[0]] || scales['en']
       var isRolling = false
+      var rand = new Random()
 
       
       var instructionsDOM = document.querySelector('.instructions')
@@ -171,6 +174,19 @@
       instructionsDOM.onclick = instructionsDOM.ontouchstart = doRoll
       diceDOM.onclick = diceDOM.ontouchend = doRoll
       doRoll()
+
+
+      /*var totDice = 0
+      var total = 0
+      setInterval(function () {
+        var results = rollDice()
+        for (var i = 0; i < results.length; i++) {
+          totDice++
+          total += results[i]
+        }
+
+        document.querySelector('.result').innerHTML = 'avg: ' + total/totDice
+      })*/
 
 
 
@@ -182,14 +198,14 @@
 
         displayBlankResult()
         displayLatest()
-        setTimeout(internalRoll, 100)
+        setTimeout(internalRoll, rollDelay)
 
         function internalRoll() {
           var results = rollDice()
           displayDice(results)
 
           if (--rolls) {
-            setTimeout(internalRoll, 100)
+            setTimeout(internalRoll, rollDelay)
           } else {
             isRolling = false
             displayResult(results)
@@ -206,7 +222,10 @@
       }
 
       function rollDie() {
-        return Math.floor(Math.random() * 3) - 1
+        var noise = rand.integer(0, 5)
+        for (var i = 0; i < noise; i++)
+          rand.integer(-1, 1)
+        return rand.integer(-1, 1)
       }
 
       function rollDice() {
