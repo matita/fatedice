@@ -76,9 +76,8 @@
         color: #555;
       }
 
-      .result-num {
-        display: inline-block;
-        text-align: right;
+      .result-num + .result-scaled:before {
+        content: ' · ';
       }
 
       .roll-btn {
@@ -95,6 +94,8 @@
       }
 
       .latest .result-num {
+        display: inline-block;
+        text-align: right;
         width: 2em;
       }
 
@@ -219,8 +220,7 @@
       function getTextResult (results) {
         var r = sumDice(results)
         var scaled = scale[r]
-        return '<span class="result-num">' + (r > 0 ? '+' : '') + r + '</span>' +
-          ' &middot; ' +
+        return '<span class="result-num">' + (r > 0 ? '+' : '') + r + ' </span>' +
           '<span class="result-scaled">' + (scale[r] || '---') + '</span>'
       }
 
