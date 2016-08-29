@@ -166,7 +166,7 @@
       var scale = scales[lang] || scales[lang.split('-')[0]] || scales['en']
       var isRolling = false
       var rand = new Random()
-
+      var params = getURIParams()
       
       var instructionsDOM = document.querySelector('.instructions')
       var diceDOM = document.querySelector('.dice')
@@ -176,24 +176,11 @@
       doRoll()
 
 
-      /*var totDice = 0
-      var total = 0
-      setInterval(function () {
-        var results = rollDice()
-        for (var i = 0; i < results.length; i++) {
-          totDice++
-          total += results[i]
-        }
-
-        document.querySelector('.result').innerHTML = 'avg: ' + total/totDice
-      })*/
-
-
-
       function doRoll() {
         if (isRolling)
           return
         isRolling = true
+        rand = new Random()
         var rolls = 5
 
         displayBlankResult()
@@ -222,16 +209,25 @@
       }
 
       function rollDie() {
+        return rand.integer(-1, 1)
+      }
+
+      function rollDieWithEntropy() {
         var noise = rand.integer(0, 5)
         for (var i = 0; i < noise; i++)
           rand.integer(-1, 1)
         return rand.integer(-1, 1)
       }
 
-      function rollDice() {
+      function rollDieNative() {
+        return Math.floor(Math.random()*3)-1
+      }
+
+      function rollDice(roll) {
+        roll = roll || rollDie
         var results = []
         for (var i = 0; i < 4; i++) {
-          results[i] = rollDie()
+          results[i] = roll()
         }
         return results
       }
@@ -265,6 +261,22 @@
         document.querySelector('.latest').innerHTML = latest.map(function (r) {
           return '<div class="latest-item">' + getTextResult(r) + '</div>'
         }).join('')
+      }
+
+      function getURIParams() {
+        return location.search.substr(1).split('&')
+          .reduce(function (p, e) {
+            e = e.split('=')
+            p[decodeURIComponent(e[0])] = decodeURIComponent(e[1] || '') 
+            return p
+          }, {})
+      }
+
+      if ('testRolls' in params) {
+        window.testRolls = params.testRolls
+        var s = document.createElement('script')
+        s.src = 'distributions.js'
+        document.body.appendChild(s)
       }
     </script>
   </body>
